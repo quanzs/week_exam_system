@@ -22,6 +22,11 @@ router.get('/regist', function(req, res, next) {
   res.render("regist", {});
 });
 
+router.get('/', function(req, res, next) {
+  res.redirect("/teacher/login");
+});
+
+
 router.get('/login', function(req, res, next) {
   res.render("login", {});
 });
