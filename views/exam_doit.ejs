@@ -221,6 +221,9 @@
 				success: function(res) {
 					console.log(res);
 					alert(res.message);
+					if(res.status == 1) {
+						window.close();
+					}
 					// if(res.status == 1) {
 					// 	location.href = "/teacher/list";
 					// } else {
