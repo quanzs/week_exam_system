@@ -98,6 +98,20 @@
 			white-space: pre;
 			height: auto;
 		}
+		i {
+			display: inline-block;
+			width: 20px;
+			height: 20px;
+			margin-right: 16px;
+		}
+		.right {
+			background: url(/img/right.png) center center;
+			background-size: cover;
+		}
+		.wrong {
+			background: url(/img/wrong.png) center center;
+			background-size: cover;
+		}
 	</style>
 </head>
 <body>
@@ -122,7 +136,7 @@
 	</div>
 	<div id="template" class="item">
 		<div style="overflow: hidden;">
-			<h2 class="student_name"></h2>
+			<h4 class="student_name"></h4>
 			<div class="content"></div>
 		</div>
 	</div>
@@ -143,7 +157,7 @@
 					eid: eid
 				},
 				success: function(res) {
-					console.log(res);
+					// console.log(res);
 					renderExamList(res);
 				}
 			})
@@ -165,28 +179,34 @@
 					eid: eid
 				},
 				success: function(res) {
-					console.log(res);
+					// console.log(res);
 					for(var i=0; i<res.length; i++) {
 						addResult(res[i], answerList);
 					}
+					// 打印所有成绩
+					console.log(allResult);
 				}
 			})
 		}
-
+		var allResult = "\n";
 		function addResult(data, answerList) {
 			var cloneOfExam = $("#template").clone().removeAttr("id");
-			cloneOfExam.find(".student_name").text(data.student_name);
 			$(".exam_results").append(cloneOfExam);
 			var answers = JSON.parse(data.answers);
 			var html = "";
+			var rightCount = 0;
 			for(var i=0; i < answers.length; i++) {
-				html += "第" + (i + 1)+ "题：";
+				html += (i + 1) + "：";
 				if(answers[i].rightAnswer.join(",") == answerList[i].rightAnswer.join(",")) {
-					html += "正确";
+					html += "<i class='right'></i>";
+					rightCount++;
 				} else {
-					html += "错误";
+					html += "<i class='wrong'></i>";
 				}
 			}
+			var score = Math.ceil(rightCount/answers.length*100);
+			cloneOfExam.find(".student_name").text(data.student_name + "：" + score + "分");
+			allResult += data.student_name + "\t" + score + "\n";
 			cloneOfExam.find(".content").html(html);
 			return cloneOfExam;
 		}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>登录</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css"> 
+	<style type="text/css">
+		html, body, ul, li, h1, h2 {
+			padding: 0;
+			margin: 0;
+		}
+		#template {
+			display: none;
+		}
+		.item {
+			background: #fff;
+		}
+		html, body {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+		body {
+			overflow-y: auto;
+		}
+		.header {
+			box-sizing: border-box;
+			padding-top: 10px;
+			height: 60px;
+			background: #438eb9;
+			overflow: hidden;
+		}
+		.mianContent {
+			display: flex;
+			flex-direction: row;
+			flex: 1;
+			overflow-y: hidden;
+		}
+		#exam_nav {
+			width: 120px;
+			height: 100%;
+			box-sizing: border-box;
+			padding: 5px 2px 0;
+			background: #6fb3e0;
+			overflow-y: auto;
+			text-align: center;
+		}
+		.exam_add {
+			flex: 1;
+			padding-bottom: 200px;
+			overflow-y: auto;
+		}
+		.navItem {
+			display: block;
+			height: 50px;
+			line-height: 50px;
+			text-align: center;
+			border: 1px solid #000;
+			margin-bottom: 5px;
+		}
+		.item {
+			padding: 10px 15px 20px;
+			border-bottom: 1px solid #000;
+			box-sizing: border-box;
+			width: 100%;
+			overflow: hidden;
+		}
+		li {
+			overflow: hidden;
+		}
+		li .control-label {
+			float: left;
+			line-height: 34px;
+		}
+		li .form-control[type=text] {
+			float: left;
+			display: inline-block;
+			width: 60%;
+			margin-right: 20px;
+		}
+		li .form-control[type=checkbox] {
+			float: left;
+			display: inline-block;
+			width: 30px;
+		}
+		.title {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+<div class="col-sm-offset-4 col-sm-6">
+	<h1 class="title">登录画面</h1>
+</div>
+<form class="form-horizontal" role="form">
+<div class="form-group">
+	<label for="firstname" class="col-sm-4 control-label">用户名</label>
+	<div class="col-sm-6">
+		<input type="text" class="form-control" id="username" placeholder="请输入用户名">
+	</div>
+</div>
+<div class="form-group">
+	<label for="lastname" class="col-sm-4 control-label">密码</label>
+	<div class="col-sm-6">
+		<input type="password" class="form-control" id="psw" placeholder="请输入密码">
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-offset-4 col-sm-6">
+		<button type="button" id="save" class="btn btn-primary btn-block">登录</button>
+		<a href="/teacher/regist" class="btn btn-default btn-block">注册</a>
+	</div>
+</div>
+</form>
+</body>
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#save").on("click", regist);
+
+		function regist() {
+			$.ajax({
+				url: "/teacher/api/login",
+				type: "post",
+				data: {
+					username: $("#username").val(),
+					psw: $("#psw").val()
+				},
+				success: function(res) {
+					console.log(res);
+					if(res.status == 1) {
+						alert(res.message);
+						location.href = "/teacher/list";
+					} else {
+						alert(res.message);
+					}
+				}
+			})
+		}
+	})
+</script>
+</html>

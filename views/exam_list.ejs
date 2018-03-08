@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>出题</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css"> 
 	<style type="text/css">
 		html, body, ul, li, h1, h2 {
 			padding: 0;
@@ -12,10 +13,10 @@
 </head>
 <body>
 	<div class="header">
-		<a href="exam_add">添加新试题</a>
+		<a href="/teacher/exam_add" class="btn btn-primary">添加新试题</a>
 	</div>
 	<div class="mianContent">
-		<table>
+		<table class="table">
 			<thead>
 				<th>编号</th>
 				<th>试题名</th>
@@ -27,9 +28,9 @@
 					<td><%= i + 1%></td>
 					<td><%= list[i].eTitle %></td>
 					<td>
-						<a href="/teacher/exam_edit/<%= list[i]._id %>">编辑</a>
-						<a href="/teacher/exam_results/<%= list[i]._id %>" target="_blank">考试结果</a>
-						<a href="/exam/doit/<%= list[i]._id %>" target="_blank">考试链接</a>
+						<a class="btn btn-primary" href="/teacher/exam_edit/<%= list[i]._id %>">编辑</a>
+						<a class="btn btn-success" href="/teacher/exam_results/<%= list[i]._id %>" target="_blclass="btn btn-primary" ank">考试结果</a>
+						<a class="btn btn-success" href="/exam/doit/<%= list[i]._id %>" target="_blank">考试链接</a>
 					</td>
 				</tr>
 				<% } %>
@@ -37,7 +38,8 @@
 		</table>
 	</div>
 </body>
-<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 	$(function(){
 		var index = 1;
