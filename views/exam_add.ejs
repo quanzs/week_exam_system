@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>出题</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css"> 
+	<style type="text/css">
+		html, body, ul, li, h1, h2 {
+			padding: 0;
+			margin: 0;
+		}
+		#template {
+			display: none;
+		}
+		.item {
+			background: #fff;
+		}
+		html, body {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+		body {
+			overflow-y: auto;
+		}
+		.header {
+			box-sizing: border-box;
+			padding-top: 10px;
+			height: 60px;
+			background: #438eb9;
+			overflow: hidden;
+		}
+		.mianContent {
+			display: flex;
+			flex-direction: row;
+			flex: 1;
+			overflow-y: hidden;
+		}
+		#exam_nav {
+			width: 120px;
+			height: 100%;
+			box-sizing: border-box;
+			padding: 5px 2px 0;
+			background: #6fb3e0;
+			overflow-y: auto;
+			text-align: center;
+		}
+		.exam_add {
+			flex: 1;
+			padding-bottom: 200px;
+			overflow-y: auto;
+		}
+		.navItem {
+			display: block;
+			height: 50px;
+			line-height: 50px;
+			text-align: center;
+			border: 1px solid #000;
+			margin-bottom: 5px;
+		}
+		.item {
+			padding: 10px 15px 20px;
+			border-bottom: 1px solid #000;
+			box-sizing: border-box;
+			width: 100%;
+			overflow: hidden;
+		}
+		li {
+			overflow: hidden;
+		}
+		li .control-label {
+			float: left;
+			line-height: 34px;
+		}
+		li .form-control[type=text] {
+			float: left;
+			display: inline-block;
+			width: 60%;
+			margin-right: 20px;
+		}
+		li .form-control[type=checkbox] {
+			float: left;
+			display: inline-block;
+			width: 30px;
+		}
+		.item_title {
+
+		}
+	</style>
+</head>
+<body>
+	<div class="header form-horizontal"">
+		<div class="form-group">
+			<label class="col-sm-1 control-label">试题名称</label>
+			<div class="col-sm-6">
+				<input type="text" class="form-control" id="eTitle" placeholder="请输入试题名称">
+			</div>
+			<div class="col-sm-4">
+				<button id="addItem" class="btn btn-primary">添加题目</button>
+				<button id="saveAll" class="btn btn-primary">保存</button>
+				<a href="/teacher/list" class="btn btn-primary">返回列表</a>
+			</div>
+		</div>
+	</div>
+	<div class="mianContent">
+		<div id="exam_nav">
+			<h4>快速导航</h4>
+		</div>
+		<div class="exam_add"></div>
+	</div>
+	<div id="template" class="item">
+		<h2 class="item_title"></h2>
+		<button class="delItem btn btn-danger">删除</button>
+		<h3>题目：</h3>
+		<textarea class="content form-control col-sm-11"></textarea>
+		<h3>选项：</h3>
+		<div>
+			<ul>
+				<li>
+					<label class="control-label">A：</label>
+					<input type="text" class="form-control">
+					<label class="control-label">是否正确：</label>
+					<input type="checkbox" class="form-control">
+				</li>
+				<li>
+					<label class="control-label">B：</label>
+					<input type="text" class="form-control">
+					<label class="control-label">是否正确：</label>
+					<input type="checkbox" class="form-control">
+				</li>
+				<li>
+					<label class="control-label">C：</label>
+					<input type="text" class="form-control">
+					<label class="control-label">是否正确：</label>
+					<input type="checkbox" class="form-control">
+				</li>
+				<li>
+					<label class="control-label">D：</label>
+					<input type="text" class="form-control">
+					<label class="control-label">是否正确：</label>
+					<input type="checkbox" class="form-control">
+				</li>
+				<li>
+					<label class="control-label">E：</label>
+					<input type="text" class="form-control">
+					<label class="control-label">是否正确：</label>
+					<input type="checkbox" class="form-control">
+				</li>
+				<li>
+					<label class="control-label">F：</label>
+					<input type="text" class="form-control">
+					<label class="control-label">是否正确：</label>
+					<input type="checkbox" class="form-control">
+				</li>
+			</ul>
+		</div>
+	</div>
+</body>
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		// 试题序号
+		var index = 1;
+		// 考试题id
+		var eid = '<%= eid %>';
+
+		function addExam() {
+			var examId = "exam_" + index;
+			var cloneOfExam = $("#template").clone().removeAttr("id").attr("id", examId);
+			cloneOfExam.find("h2").text("第" + index + "题");
+			$(".exam_add").append(cloneOfExam);
+			
+			location.hash="#" + examId;
+			var navItem = $("<a class='btn btn-success btn-block'></a>");
+			navItem.attr("href", "#" + examId).text("第" + index + "题");
+			$("#exam_nav").append(navItem);
+			index++;
+			return cloneOfExam;
+		}
+
+		function saveExam() {
+			var examObj = [];
+			$(".exam_add .item").each(function(index, item){
+				var eItem = $(item);
+				var choices = [];
+				var rightAnswer = [];
+				eItem.find("input[type=text]").each(function(cIndex, choice){
+					choices.push(choice.value);
+					console.log(choice.nextElementSibling.nextElementSibling);
+					if(choice.nextElementSibling.nextElementSibling.checked) {
+						rightAnswer.push(cIndex);
+					}
+				})
+				var row = {
+					content: eItem.find(".content").val(),
+					choices: choices,
+					rightAnswer: rightAnswer
+				}
+				examObj.push(row);
+			})
+
+			// console.log(examObj);
+			$.ajax({
+				url: "/teacher/api/save_exam",
+				type: "post",
+				data: {
+					eid: eid,
+					eTitle: $("#eTitle").val(),
+					exam: JSON.stringify(examObj)
+				},
+				success: function(res) {
+					console.log(res);
+					if(res.status == 1) {
+						location.href = "/teacher/list";
+					} else {
+						alert(res.message);
+					}
+				}
+			})
+		}
+
+		// 默认生成一个题目
+		if(index == 1 && eid == "") {
+			addExam();
+		}
+		
+		// 添加一个题目
+		$("#addItem").on("click", addExam);
+
+		// 保存题目
+		$("#saveAll").on("click", saveExam);
+
+		// 删除一个题目
+		$(".exam_add").delegate(".delItem", "click", function(e) {
+			if(!confirm("是否要删除这个题目")) {
+				return;
+			}
+			var item = $(this).parent(".item");
+			var navItem = $("a[href=#" + item.attr("id") + "]");
+			navItem.fadeOut();
+			item.slideUp(function(){
+				console.log();
+				navItem.remove();
+				item.remove();
+				console.log("删除成功");
+			});
+		})
+
+		// 下面是编辑模式的时候运行的代码。
+		if(eid != "") {
+			$.ajax({
+				url: "/teacher/api/getExamData",
+				data: {
+					eid: eid
+				},
+				success: function(res) {
+					console.log(res);
+					renderExamList(res);
+				}
+			})
+		}
+
+		function renderExamList(data) {
+			$("#eTitle").val(data.eTitle);
+			var list = JSON.parse(data.content);
+			for(var i=0; i < list.length; i++) {
+				var item = addExam();
+				item.find(".content").val(list[i].content);
+
+				var choices = list[i].choices;
+				var rightAnswer = list[i].rightAnswer;
+				var inputArr = item.find("input[type=text]");
+				var checkboxArr = item.find("input[type=checkbox]");
+				for(var k=0; k < choices.length;k++) {
+					inputArr[k].value = choices[k];
+					if(rightAnswer.indexOf(k) != -1) {
+						checkboxArr[k].checked = "checked";
+					}
+				}
+			}
+			location.hash="#exam_1";
+		}
+	})
+</script>
+</html>

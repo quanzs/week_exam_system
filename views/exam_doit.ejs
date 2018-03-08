@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>出题</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css"> 
+	<style type="text/css">
+		html, body, ul, li, h1, h2 {
+			padding: 0;
+			margin: 0;
+		}
+		#eTitle {
+			color: #fff;
+			padding-left: 20px;
+			width: auto;
+		}
+		#template {
+			display: none;
+		}
+		.item {
+			background: #fff;
+		}
+		html, body {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+		body {
+			overflow-y: auto;
+		}
+		.header {
+			box-sizing: border-box;
+			padding-top: 10px;
+			height: 60px;
+			background: #438eb9;
+			overflow: hidden;
+		}
+		.mianContent {
+			display: flex;
+			flex-direction: row;
+			flex: 1;
+			overflow-y: hidden;
+		}
+		#exam_nav {
+			width: 120px;
+			height: 100%;
+			box-sizing: border-box;
+			padding: 5px 2px 0;
+			background: #6fb3e0;
+			overflow-y: auto;
+			text-align: center;
+		}
+		.exam_add {
+			flex: 1;
+			padding-bottom: 200px;
+			overflow-y: auto;
+		}
+		.navItem {
+			display: block;
+			height: 50px;
+			line-height: 50px;
+			text-align: center;
+			border: 1px solid #000;
+			margin-bottom: 5px;
+		}
+		.item {
+			padding: 10px 15px 20px;
+			border-bottom: 1px solid #000;
+			box-sizing: border-box;
+			width: 100%;
+			overflow: hidden;
+		}
+		li {
+			overflow: hidden;
+		}
+		li .control-label {
+			float: left;
+			line-height: 34px;
+		}
+		li div.form-control {
+			float: left;
+			display: inline-block;
+			width: 60%;
+			margin-right: 20px;
+			border: none;
+			background-color: transparent;
+			word-break: break-all;
+			height: auto;
+		}
+		li .form-control[type=checkbox] {
+			float: left;
+			display: inline-block;
+			width: 30px;
+		}
+		li .control-label {
+		}
+		.content {
+			white-space: pre;
+			height: auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="header form-horizontal"">
+		<div class="form-group">
+			<div class="col-sm-7">
+				<h1 id="eTitle"></h1>
+			</div>
+			<div class="col-sm-3">
+				<input type="text" id="student_name" class="form-control" placeholder="请输入姓名">
+			</div>
+			<div class="col-sm-2">
+				<button id="saveAll" style="float: right; margin-right: 20px;" class="btn btn-success btn-block">交卷</button>
+			</div>
+		</div>
+	</div>
+	<div class="mianContent">
+		<div id="exam_nav">
+			<h4>快速导航</h4>
+		</div>
+		<div class="exam_add"></div>
+	</div>
+	<div id="template" class="item">
+		<div style="overflow: hidden;">
+			<h2 class="item_title"></h2>
+			<div class="content form-control col-sm-11"></div>
+		</div>
+		<ul>
+			<li>
+				<label class="control-label">A：</label>
+				<div class="form-control"></div>
+				<label class="control-label"></label>
+				<input type="checkbox" class="form-control" value="0">
+			</li>
+			<li>
+				<label class="control-label">B：</label>
+				<div class="form-control"></div>
+				<label class="control-label"></label>
+				<input type="checkbox" class="form-control" value="1">
+			</li>
+			<li>
+				<label class="control-label">C：</label>
+				<div class="form-control"></div>
+				<label class="control-label"></label>
+				<input type="checkbox" class="form-control" value="2">
+			</li>
+			<li>
+				<label class="control-label">D：</label>
+				<div class="form-control"></div>
+				<label class="control-label"></label>
+				<input type="checkbox" class="form-control" value="3">
+			</li>
+			<li>
+				<label class="control-label">E：</label>
+				<div class="form-control"></div>
+				<label class="control-label"></label>
+				<input type="checkbox" class="form-control" value="4">
+			</li>
+			<li>
+				<label class="control-label">F：</label>
+				<div class="form-control"></div>
+				<label class="control-label"></label>
+				<input type="checkbox" class="form-control" value="5">
+			</li>
+		</ul>
+	</div>
+</body>
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		// 试题序号
+		var index = 1;
+		// 考试题id
+		var eid = '<%= eid %>';
+
+		function addExam() {
+			var examId = "exam_" + index;
+			var cloneOfExam = $("#template").clone().removeAttr("id").attr("id", examId);
+			cloneOfExam.find("h2").text("第" + index + "题");
+			$(".exam_add").append(cloneOfExam);
+			
+			location.hash="#" + examId;
+			var navItem = $("<a class='btn btn-success btn-block'></a>");
+			navItem.attr("href", "#" + examId).text("第" + index + "题");
+			$("#exam_nav").append(navItem);
+			index++;
+			return cloneOfExam;
+		}
+
+		$("#saveAll").on("click", saveExam);
+
+		function saveExam() {
+			if($("#student_name").val() == "") {
+				alert("请输入您的姓名");
+				return;
+			}
+			var examObj = [];
+			$(".exam_add .item").each(function(index, item){
+				var eItem = $(item);
+				var choices = [];
+				var rightAnswer = [];
+				eItem.find("input[type=checkbox]:checked").each(function(cIndex, choice){
+					rightAnswer.push(choice.value);
+				})
+				var row = {
+					rightAnswer: rightAnswer
+				}
+				examObj.push(row);
+			})
+
+			console.log(examObj);
+			$.ajax({
+				url: "/exam/api/save_answer",
+				type: "post",
+				data: {
+					eid: eid,
+					student_name: $("#student_name").val(),
+					answers: JSON.stringify(examObj)
+				},
+				success: function(res) {
+					console.log(res);
+					alert(res.message);
+					// if(res.status == 1) {
+					// 	location.href = "/teacher/list";
+					// } else {
+					// 	alert(res.message);
+					// }
+				}
+			})
+		}
+
+		if(eid != "") {
+			$.ajax({
+				url: "/exam/api/getExamData",
+				data: {
+					eid: eid
+				},
+				success: function(res) {
+					console.log(res);
+					renderExamList(res);
+				}
+			})
+		}
+
+		function renderExamList(data) {
+			$("#eTitle").text(data.eTitle);
+			var list = JSON.parse(data.content);
+			for(var i=0; i < list.length; i++) {
+				var item = addExam();
+				item.find(".content").text(list[i].content);
+
+				var choices = list[i].choices;
+				var rightAnswer = list[i].rightAnswer;
+				var inputArr = item.find("li div.form-control");
+				for(var k=0; k < choices.length;k++) {
+					inputArr[k].innerText = choices[k];
+				}
+			}
+			location.hash="#exam_1";
+
+			// 隐藏所有没内容的选项
+			$(".exam_add div.form-control").each(function(index, item){
+				if(item.innerText == "") {
+					$(item).parent("li").hide();
+				}
+			})
+		}
+	})
+</script>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>出题</title>
+	<style type="text/css">
+		html, body, ul, li, h1, h2 {
+			padding: 0;
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<div class="header">
+		<a href="exam_add">添加新试题</a>
+	</div>
+	<div class="mianContent">
+		<table>
+			<thead>
+				<th>编号</th>
+				<th>试题名</th>
+				<th>操作</th>
+			</thead>
+			<tbody>
+				<% for(var i=0;i<list.length;i++) {%>
+				<tr>
+					<td><%= i + 1%></td>
+					<td><%= list[i].eTitle %></td>
+					<td>
+						<a href="/teacher/exam_edit/<%= list[i]._id %>">编辑</a>
+						<a href="/teacher/exam_results/<%= list[i]._id %>" target="_blank">考试结果</a>
+						<a href="/exam/doit/<%= list[i]._id %>" target="_blank">考试链接</a>
+					</td>
+				</tr>
+				<% } %>
+			</tbody>
+		</table>
+	</div>
+</body>
+<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var index = 1;
+
+		function addExam() {
+			var examId = "exam_" + index;
+			var cloneOfExam = $("#template").clone().removeAttr("id").attr("id", examId);
+			cloneOfExam.find("h2").text("第" + index + "题");
+			$(".exam_add").append(cloneOfExam);
+			
+			location.hash="#" + examId;
+			var navItem = $("<a class='navItem'></a>");
+			navItem.attr("href", "#" + examId).text("第" + index + "题");
+			$("#exam_nav").append(navItem);
+			index++;
+		}
+
+		function saveExam() {
+			var examObj = [];
+			$(".exam_add .item").each(function(index, item){
+				var eItem = $(item);
+				var choices = [];
+				var rightAnswer = [];
+				eItem.find("input[type=text]").each(function(cIndex, choice){
+					choices.push(choice.value);
+					console.log(choice.nextElementSibling);
+					if(choice.nextElementSibling.checked) {
+						rightAnswer.push(cIndex);
+					}
+				})
+				var row = {
+					content: eItem.find(".content").val(),
+					choices: choices,
+					rightAnswer: rightAnswer
+				}
+				examObj.push(row);
+			})
+
+			console.log(examObj);
+			$.ajax({
+				url: "api/save_exam",
+				type: "post",
+				data: {
+					eTitle: $("#eTitle").val(),
+					exam: JSON.stringify(examObj)
+				},
+				success: function(res) {
+					console.log(res);
+				}
+			})
+		}
+
+		// 默认生成一个题目
+		addExam();
+		addExam();
+		
+		// 添加一个题目
+		$("#addItem").on("click", addExam);
+
+		// 保存题目
+		$("#saveAll").on("click", saveExam);
+
+		// 删除一个题目
+		$(".exam_add").delegate(".delItem", "click", function(e) {
+			if(!confirm("是否要删除这个题目")) {
+				return;
+			}
+			var item = $(this).parent(".item");
+			var navItem = $("a[href=#" + item.attr("id") + "]");
+			navItem.fadeOut();
+			item.slideUp(function(){
+				console.log();
+				navItem.remove();
+				item.remove();
+				console.log("删除成功");
+			});
+		})
+	})
+</script>
+</html>

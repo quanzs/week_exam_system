@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>出题</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css"> 
+	<style type="text/css">
+		html, body, ul, li, h1, h2 {
+			padding: 0;
+			margin: 0;
+		}
+		#eTitle {
+			color: #fff;
+			padding-left: 20px;
+			width: auto;
+		}
+		#template {
+			display: none;
+		}
+		.item {
+			background: #fff;
+		}
+		html, body {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+		body {
+			overflow-y: auto;
+		}
+		.header {
+			box-sizing: border-box;
+			padding-top: 10px;
+			height: 60px;
+			background: #438eb9;
+			overflow: hidden;
+		}
+		.mianContent {
+			display: flex;
+			flex-direction: row;
+			flex: 1;
+			overflow-y: hidden;
+		}
+		#exam_nav {
+			width: 120px;
+			height: 100%;
+			box-sizing: border-box;
+			padding: 5px 2px 0;
+			background: #6fb3e0;
+			overflow-y: auto;
+			text-align: center;
+		}
+		.exam_results {
+			flex: 1;
+			padding-bottom: 200px;
+			overflow-y: auto;
+		}
+		.navItem {
+			display: block;
+			height: 50px;
+			line-height: 50px;
+			text-align: center;
+			border: 1px solid #000;
+			margin-bottom: 5px;
+		}
+		.item {
+			padding: 10px 15px 20px;
+			border-bottom: 1px solid #000;
+			box-sizing: border-box;
+			width: 100%;
+			overflow: hidden;
+		}
+		li {
+			overflow: hidden;
+		}
+		li .control-label {
+			float: left;
+			line-height: 34px;
+		}
+		li div.form-control {
+			float: left;
+			display: inline-block;
+			width: 60%;
+			margin-right: 20px;
+			border: none;
+			background-color: transparent;
+			word-break: break-all;
+			height: auto;
+		}
+		li .form-control[type=checkbox] {
+			float: left;
+			display: inline-block;
+			width: 30px;
+		}
+		li .control-label {
+		}
+		.content {
+			white-space: pre;
+			height: auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="header form-horizontal"">
+<!-- 		<div class="form-group">
+			<div class="col-sm-7">
+				<h1 id="eTitle"></h1>
+			</div>
+			<div class="col-sm-3">
+				<input type="text" id="student_name" class="form-control" placeholder="请输入姓名">
+			</div>
+			<div class="col-sm-2">
+				<button id="saveAll" style="float: right; margin-right: 20px;" class="btn btn-success btn-block">交卷</button>
+			</div>
+		</div> -->
+	</div>
+	<div class="mianContent">
+		<div id="exam_nav">
+			<h4>快速导航</h4>
+		</div>
+		<div class="exam_results"></div>
+	</div>
+	<div id="template" class="item">
+		<div style="overflow: hidden;">
+			<h2 class="student_name"></h2>
+			<div class="content"></div>
+		</div>
+	</div>
+</body>
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		// 试题序号
+		var index = 1;
+		// 考试题id
+		var eid = '<%= eid %>';
+
+		if(eid != "") {
+			$.ajax({
+				url: "/exam/api/getExamData",
+				data: {
+					eid: eid
+				},
+				success: function(res) {
+					console.log(res);
+					renderExamList(res);
+				}
+			})
+		}
+
+		function renderExamList(data) {
+			$("#eTitle").text(data.eTitle);
+			var list = JSON.parse(data.content);
+			// for(var i=0; i < list.length; i++) {
+			// 	var rightAnswer = list[i].rightAnswer;
+			// }
+			getAllAnswersAndJudge(list);
+		}
+
+		function getAllAnswersAndJudge(answerList) {
+			$.ajax({
+				url: "/teacher/api/getAnswerData",
+				data: {
+					eid: eid
+				},
+				success: function(res) {
+					console.log(res);
+					for(var i=0; i<res.length; i++) {
+						addResult(res[i], answerList);
+					}
+				}
+			})
+		}
+
+		function addResult(data, answerList) {
+			var cloneOfExam = $("#template").clone().removeAttr("id");
+			cloneOfExam.find(".student_name").text(data.student_name);
+			$(".exam_results").append(cloneOfExam);
+			var answers = JSON.parse(data.answers);
+			var html = "";
+			for(var i=0; i < answers.length; i++) {
+				html += "第" + (i + 1)+ "题：";
+				if(answers[i].rightAnswer.join(",") == answerList[i].rightAnswer.join(",")) {
+					html += "正确";
+				} else {
+					html += "错误";
+				}
+			}
+			cloneOfExam.find(".content").html(html);
+			return cloneOfExam;
+		}
+	})
+</script>
+</html>
