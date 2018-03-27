@@ -80,8 +80,9 @@ router.get('/export/:eid', function(req, res, next) {
 			  tableFontFamily: "Comic Sans MS",
 			  // borders: true
 			}
-
-			docx.createTable (table, tableStyle);
+			if(table.length > 0) {
+				docx.createTable(table, tableStyle);
+			}
 
 			pObj = docx.createP(); 
 		}
