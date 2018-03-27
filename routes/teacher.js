@@ -1,6 +1,7 @@
 var express = require('express');
 const mongoose = require('mongoose');
 const md5 = require('md5');
+const officegen = require("officegen");
 var router = express.Router();
 var ExamModel = require('../model/ExamModel');
 var AnswerModel = require('../model/AnswerModel');
@@ -13,8 +14,78 @@ router.get('/list', function(req, res, next) {
 	}
 
 	ExamModel.find({author: req.session.username}, '_id eTitle author', function(err, docs) {
-		console.log(docs);
+		// console.log(docs);
 		res.render("exam_list", {list: docs});
+	})
+});
+
+router.get('/export/:eid', function(req, res, next) {
+	// if(req.session == null || req.session.username == null) {
+	// 	res.redirect("/teacher/login");
+	// 	return;
+	// }
+
+	ExamModel.findOne({_id: req.params.eid}, function(err, doc) {
+		console.log(req.params.eid, doc);
+		if(err || doc == null) {
+			res.send("试题不存在");
+			return;
+		}
+		res.writeHead ( 200, {
+			// "Content-Type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+			'Content-disposition': 'attachment; filename=examExport.docx'
+		});
+		console.log(doc);
+
+		var docx = officegen('docx');
+		docx.on ( 'finalize', function ( written ) {
+		// ... 
+		});
+
+		docx.on ( 'error', function ( err ) {
+		// ... 
+		});
+
+		docx.setDocSubject(doc.eTitle);
+		var exams = JSON.parse(doc.content);
+		for(var i=0;i<exams.length;i++) {
+			var pObj = docx.createP(); 
+			// 标题
+			pObj.addText ( i + 1 + ". " + exams[i].content, { bold: true } );
+			var table = [];
+			var choices = exams[i].choices;
+			for(var k=0;k<choices.length;k++) {
+				if(choices[k] == "") {
+					continue;
+				}
+				var row = [
+					{
+					    val: k+1 + ". " + choices[k],
+					    opts: {gridSpan: 1}
+					}
+				];
+				// 如果这道题正确标识这道题为（正确）
+				if(exams[i].rightAnswer.indexOf(k) != -1) {
+					row[0].val += "✔";
+					row[0].opts.color = "41B883";
+				}
+				table.push(row);
+			}
+
+			var tableStyle = {
+			  tableColWidth: 7500,
+			  tableSize: 24,
+			  // tableColor: "ada",
+			  tableAlign: "left",
+			  tableFontFamily: "Comic Sans MS",
+			  // borders: true
+			}
+
+			docx.createTable (table, tableStyle);
+
+			pObj = docx.createP(); 
+		}
+		docx.generate(res);
 	})
 });
 

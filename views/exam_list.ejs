@@ -28,6 +28,7 @@
 					<td><%= i + 1%></td>
 					<td><%= list[i].eTitle %></td>
 					<td>
+						<a class="btn btn-primary" href="/teacher/export/<%= list[i]._id %>">导出word</a>
 						<a class="btn btn-primary" href="/teacher/exam_edit/<%= list[i]._id %>">编辑</a>
 						<a class="btn btn-success" href="/teacher/exam_results/<%= list[i]._id %>" target="_blclass="btn btn-primary" ank">考试结果</a>
 						<a class="btn btn-success" href="/exam/doit/<%= list[i]._id %>" target="_blank">考试链接</a>
